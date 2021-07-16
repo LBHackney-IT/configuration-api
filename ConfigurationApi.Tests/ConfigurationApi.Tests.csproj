@@ -27,4 +27,10 @@
     <ProjectReference Include="..\ConfigurationApi\ConfigurationApi.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="V1\Domain\" />
+    <Folder Include="V1\Factories\" />
+    <Folder Include="V1\Gateways\" />
+  </ItemGroup>
+
 </Project>

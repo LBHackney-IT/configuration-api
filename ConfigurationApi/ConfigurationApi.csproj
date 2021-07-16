@@ -33,6 +33,10 @@
 
   <ItemGroup>
     <Folder Include="terraform\" />
+    <Folder Include="V1\Domain\" />
+    <Folder Include="V1\Factories\" />
+    <Folder Include="V1\Gateways\" />
+    <Folder Include="V1\UseCase\Interfaces\" />
   </ItemGroup>
 
 </Project>
