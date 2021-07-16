@@ -110,20 +110,12 @@ namespace ConfigurationApi
 
             ConfigureLogging(services, Configuration);
 
-            ConfigureDbContext(services);
+            
             //TODO: For DynamoDb, remove the line above and uncomment the line below.
             // services.ConfigureDynamoDB();
 
             RegisterGateways(services);
             RegisterUseCases(services);
-        }
-
-        private static void ConfigureDbContext(IServiceCollection services)
-        {
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-
-            services.AddDbContext<DatabaseContext>(
-                opt => opt.UseNpgsql(connectionString).AddXRayInterceptor(true));
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)

@@ -1,21 +1,13 @@
 version: "3.2"
 
 services:
-  base-api:
-    image: base-api
+  configuration-api:
+    image: configuration-api
     build:
       context: ConfigurationApi/
       dockerfile: ./Dockerfile
     ports:
-      - 3000:3000
-    environment:
-      - CONNECTION_STRING=Host=dev-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
-# TODO: If using DynamoDb remove the line above and uncomment the section below.
-#      - DynamoDb_LocalMode=true
-#      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
-#      - AWS_REGION=eu-west-2
-#      - AWS_ACCESS_KEY_ID=local
-#      - AWS_SECRET_ACCESS_KEY=local
+      - 3000:3000    
     links:
       - dev-database
   dev-database:
@@ -24,9 +16,8 @@ services:
     image: postgres:12
     volumes:
       - ./database:/docker-entrypoint-initdb.d
-
-  base-api-test:
-    image: base-api-test
+  configuration-api-test:
+    image: configuration-api-test
     build:
       context: .
       dockerfile: ConfigurationApi.Tests/Dockerfile
