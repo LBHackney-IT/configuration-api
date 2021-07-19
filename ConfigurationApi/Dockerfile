@@ -3,7 +3,12 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY *.csproj ./
+
+COPY ./ConfigurationApi.sln ./
+COPY ./ConfigurationApi/ConfigurationApi.csproj ./ConfigurationApi/
+COPY ./ConfigurationApi.Tests/ConfigurationApi.Tests.csproj ./ConfigurationApi.Tests/
+COPY /NuGet.Config /root/.nuget/NuGet/NuGet.Config
+
 RUN dotnet restore
 
 # Copy everything else and build
