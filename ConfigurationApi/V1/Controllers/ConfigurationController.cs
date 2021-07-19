@@ -28,7 +28,7 @@ namespace ConfigurationApi.V1.Controllers
                 var result = reader.ReadToEnd();
 
                 return Content(result, "application/json");
-                
+
             }
         }
     }

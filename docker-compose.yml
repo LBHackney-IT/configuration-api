@@ -16,6 +16,7 @@ services:
     image: postgres:12
     volumes:
       - ./database:/docker-entrypoint-initdb.d
+  
   configuration-api-test:
     image: configuration-api-test
     build:
@@ -29,7 +30,8 @@ services:
       - DB_DATABASE=testdb
     links:
       - localstack
-localstack:
+      
+  localstack:
     container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
     image: localstack/localstack    
     hostname: awslocal    
