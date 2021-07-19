@@ -32,7 +32,7 @@ terraform {
     bucket  = "terraform-state-development-apis"
     encrypt = true
     region  = "eu-west-2"
-    key     = services/YOUR API NAME/state #e.g. "services/transactions-api/state"
+    key     = services/configurations-api/state"
   }
 }
 
@@ -59,4 +59,19 @@ module "development" {
   cost_code = your project's cost code
   task_definition_secrets      = {}
   task_definition_secret_count = number # This number needs to reflect the number of environment variables provided
+}
+
+resource "aws_s3_bucket" "configuration" {
+  bucket = "services/configuration-api/configurations"
+  acl    = "private"
+  tags = {
+    Name        = "Configuration Api Bucket"
+    Environment = "Dev"
+  }
+}
+
+resource "aws_ssm_parameter" "configurations_" {
+  name  = "/configuration-api/bucket-name"
+  type  = "String"
+  value = aws_s3_bucket.configuration.BucketName
 }

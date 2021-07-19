@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
+using Amazon.S3.Model;
 using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,7 @@ namespace ConfigurationApi.V1.Controllers
                 var result = reader.ReadToEnd();
 
                 return Content(result, "application/json");
+                
             }
         }
     }
