@@ -7,15 +7,7 @@ services:
       context: ConfigurationApi/
       dockerfile: ./Dockerfile
     ports:
-      - 3000:3000    
-    links:
-      - dev-database
-  dev-database:
-    env_file:
-      - database.env
-    image: postgres:12
-    volumes:
-      - ./database:/docker-entrypoint-initdb.d
+      - 3000:3000
   
   configuration-api-test:
     image: configuration-api-test
