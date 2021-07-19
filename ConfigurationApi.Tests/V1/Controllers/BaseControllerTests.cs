@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using ConfigurationApi.V1;
 using ConfigurationApi.V1.Controllers;
-using ConfigurationApi.V1.Infrastructure;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
