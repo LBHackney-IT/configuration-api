@@ -9,7 +9,8 @@ COPY ./ConfigurationApi/ConfigurationApi.csproj ./ConfigurationApi/
 COPY ./ConfigurationApi.Tests/ConfigurationApi.Tests.csproj ./ConfigurationApi.Tests/
 COPY /NuGet.Config /root/.nuget/NuGet/NuGet.Config
 
-RUN dotnet restore
+RUN dotnet restore ./ConfigurationApi/ConfigurationApi.csproj
+RUN dotnet restore ./ConfigurationApi.Tests/ConfigurationApi.Tests.csproj
 
 # Copy everything else and build
 COPY . ./
