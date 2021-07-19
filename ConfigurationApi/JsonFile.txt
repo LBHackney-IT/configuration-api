@@ -1,0 +1,1 @@
+[ { "Type": "MMH", "Configuration": { "ApiUrl": "https://manage-my-home-development.hackney.gov.uk/" }, "FeatureToggles": { "CreatePerson": true, "EditPerson": false } } ]

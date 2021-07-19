@@ -27,29 +27,19 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=mypassword
       - DB_DATABASE=testdb
-# TODO: If using DynamoDb remove the line above and uncomment the section below.
-#      - DynamoDb_LocalMode=true
-#      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
-#      - AWS_REGION=eu-west-2
-#      - AWS_ACCESS_KEY_ID=local
-#      - AWS_SECRET_ACCESS_KEY=local
     links:
-      - test-database
-# TODO: If using DynamoDb remove the line above and uncomment the line below.
-#      - dynamodb-database
-
-  test-database:
-    image: test-database
-    build:
-      context: .
-      dockerfile: database/Dockerfile
+      - localstack
+localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack    
+    hostname: awslocal    
     ports:
-      - 5432:5432
-    env_file:
-      - database.env
-
-# TODO: If using DynamoDb remove the 'test-database' seciton above and uncomment the lines below.
-#  dynamodb-database:
-#    image: amazon/dynamodb-local
-#    ports:
-#      - 8000:8000
+      - "4566:4566"      
+    environment:
+      - SERVICES=s3
+      - DEBUG=1                  
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=/tmp/localstack      
+    volumes:
+      - "./.localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
