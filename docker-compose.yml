@@ -6,6 +6,8 @@ services:
     build:
       context: ConfigurationApi/
       dockerfile: ./Dockerfile
+      args:
+      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     ports:
       - 3000:3000
   
@@ -14,12 +16,8 @@ services:
     build:
       context: .
       dockerfile: ConfigurationApi.Tests/Dockerfile
-    environment:
-      - DB_HOST=test-database
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=mypassword
-      - DB_DATABASE=testdb
+      args:
+      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}    
     links:
       - localstack
       
