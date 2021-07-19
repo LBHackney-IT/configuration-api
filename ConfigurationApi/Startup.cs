@@ -110,7 +110,7 @@ namespace ConfigurationApi
 
             ConfigureLogging(services, Configuration);
 
-            
+
             //TODO: For DynamoDb, remove the line above and uncomment the line below.
             // services.ConfigureDynamoDB();
 
@@ -140,7 +140,7 @@ namespace ConfigurationApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            
+
 
             //TODO: For DynamoDb, remove the line above and uncomment the line below.
             //services.AddScoped<IExampleGateway, DynamoDbGateway>();
@@ -148,7 +148,7 @@ namespace ConfigurationApi
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
