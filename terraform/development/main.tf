@@ -48,5 +48,5 @@ resource "aws_s3_bucket" "configuration" {
 resource "aws_ssm_parameter" "configurations_" {
   name  = "/configuration-api/bucket-name"
   type  = "String"
-  value = aws_s3_bucket.configuration.BucketName
+  value = aws_s3_bucket.configuration.id
 }
