@@ -37,7 +37,7 @@ terraform {
 }
 
 resource "aws_s3_bucket" "configuration" {
-  bucket = "configuration-api-confi"  
+  bucket = "configuration-api-configurations"  
   acl    = "private"
   tags = {
     Name        = "Configuration Api Bucket"
