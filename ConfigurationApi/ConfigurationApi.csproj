@@ -10,6 +10,9 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     </PropertyGroup>
+    <ItemGroup>
+      <Content Remove="JsonFile.json" />
+    </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="6.0.3" />
@@ -33,14 +36,13 @@
 
   <ItemGroup>
     <Folder Include="terraform\" />
-    <Folder Include="V1\Domain\" />
     <Folder Include="V1\Factories\" />
     <Folder Include="V1\Gateways\" />
     <Folder Include="V1\UseCase\Interfaces\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="JsonFile.txt">
+    <None Include="JsonFile.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
