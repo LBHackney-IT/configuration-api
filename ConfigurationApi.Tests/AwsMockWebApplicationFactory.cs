@@ -23,7 +23,7 @@ namespace ConfigurationApi.Tests
 
                 services.AddSingleton<IAmazonS3>(sp =>
                 {
-                    var clientConfig = new AmazonS3Config() { ServiceURL = url, ForcePathStyle = true};
+                    var clientConfig = new AmazonS3Config() { ServiceURL = url, ForcePathStyle = true };
                     return new AmazonS3Client(clientConfig);
                 });
 

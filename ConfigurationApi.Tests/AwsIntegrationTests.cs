@@ -53,7 +53,7 @@ namespace ConfigurationApi.Tests
 
         public void Dispose()
         {
-            
+
         }
     }
 

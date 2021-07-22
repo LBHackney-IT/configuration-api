@@ -29,7 +29,7 @@ namespace ConfigurationApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]string[] types)
+        public async Task<IActionResult> Get([FromQuery] string[] types)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace ConfigurationApi.V1.Controllers
 
                 foreach (string type in types)
                 {
-                    GetObjectRequest request = new GetObjectRequest {BucketName = bucketName, Key = type};
+                    GetObjectRequest request = new GetObjectRequest { BucketName = bucketName, Key = type };
 
                     using (GetObjectResponse response = await _client.GetObjectAsync(request))
                     using (Stream responseStream = response.ResponseStream)

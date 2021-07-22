@@ -9,7 +9,7 @@ namespace ConfigurationApi.V1.Domain
 
         public Configuration Configuration { get; set; }
 
-        public Dictionary<string,object> FeatureToggles { get; set; }
+        public Dictionary<string, object> FeatureToggles { get; set; }
 
         public static ApiConfiguration Create(string json)
         {

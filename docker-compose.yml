@@ -31,6 +31,7 @@ services:
       - "4566:4566"      
     environment:
       - SERVICES=s3:4566
+      - DEFAULT_REGION=eu-west-2
       - DEBUG=1                  
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOST_TMP_FOLDER=/tmp/localstack      

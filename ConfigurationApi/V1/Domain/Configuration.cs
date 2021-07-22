@@ -1,4 +1,4 @@
-﻿namespace ConfigurationApi.V1.Domain
+namespace ConfigurationApi.V1.Domain
 {
     public class Configuration
     {
