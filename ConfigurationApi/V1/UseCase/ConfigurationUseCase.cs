@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ConfigurationApi.V1.Domain;
 using ConfigurationApi.V1.Gateway;

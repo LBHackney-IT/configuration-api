@@ -22,7 +22,7 @@ namespace ConfigurationApi.V1.Gateway
         {
             var bucketName = Environment.GetEnvironmentVariable("CONFIGURATION_S3_BUCKETNAME");
 
-            GetObjectRequest request = new GetObjectRequest {BucketName = bucketName, Key = type};
+            GetObjectRequest request = new GetObjectRequest { BucketName = bucketName, Key = type };
 
             using (GetObjectResponse response = await _amazonS3Client.GetObjectAsync(request))
             using (Stream responseStream = response.ResponseStream)
