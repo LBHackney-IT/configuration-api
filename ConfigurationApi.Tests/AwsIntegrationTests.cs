@@ -18,7 +18,6 @@ namespace ConfigurationApi.Tests
             _factory = new AwsMockWebApplicationFactory<TStartup>();
 
             EnsureEnvVarConfigured("CONFIGURATION_S3_BUCKETNAME", "configuration-api-configurations");
-            EnsureEnvVarConfigured("Localstack_S3ServiceUrl", Environment.GetEnvironmentVariable("CONFIGURATION_S3_BUCKETNAME"));
 
             Client = _factory.CreateClient();
 
