@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ConfigurationApi.V1.Domain;
 using ConfigurationApi.V1.Gateway;
+using Hackney.Core.Logging;
 
 namespace ConfigurationApi.V1.UseCase
 {
@@ -14,6 +15,7 @@ namespace ConfigurationApi.V1.UseCase
             _configurationGateway = configurationGateway;
         }
 
+        [LogCall]
         public async Task<List<ApiConfiguration>> Get(string[] types)
         {
             var listOfConfigurations = new List<ApiConfiguration>();

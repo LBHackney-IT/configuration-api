@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
 using ConfigurationApi.V1.Domain;
+using Hackney.Core.Logging;
 using Newtonsoft.Json;
 
 namespace ConfigurationApi.V1.Gateway
@@ -18,6 +19,7 @@ namespace ConfigurationApi.V1.Gateway
             _amazonS3Client = amazonS3Client;
         }
 
+        [LogCall]
         public async Task<ApiConfiguration> Get(string type)
         {
             var bucketName = Environment.GetEnvironmentVariable("CONFIGURATION_S3_BUCKETNAME");

@@ -32,7 +32,7 @@ terraform {
     bucket  = "terraform-state-housing-development"
     encrypt = true
     region  = "eu-west-2"
-    key = "services/configurations-api/state"
+    key = "services/configuration-api/state"
   }
 }
 
@@ -45,7 +45,7 @@ resource "aws_s3_bucket" "configuration" {
   }
 }
 
-resource "aws_ssm_parameter" "configurations_" {
+resource "aws_ssm_parameter" "configurations" {
   name  = "/configuration-api/development/bucket-name"
   type  = "String"
   value = aws_s3_bucket.configuration.id
