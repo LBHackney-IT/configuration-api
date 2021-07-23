@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using ConfigurationApi.V1;
+using ConfigurationApi.V1.Gateway;
+using ConfigurationApi.V1.UseCase;
 using ConfigurationApi.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -138,15 +141,12 @@ namespace ConfigurationApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-
-
-            //TODO: For DynamoDb, remove the line above and uncomment the line below.
-            //services.AddScoped<IExampleGateway, DynamoDbGateway>();
+            services.TryAddScoped<IConfigurationGateway, S3ConfigurationGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-
+            services.TryAddScoped<IConfigurationUseCase, ConfigurationUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

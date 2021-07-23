@@ -11,6 +11,16 @@
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="V1\Factories\**" />
+      <Compile Remove="V1\Gateways\**" />
+      <Content Remove="V1\Factories\**" />
+      <Content Remove="V1\Gateways\**" />
+      <EmbeddedResource Remove="V1\Factories\**" />
+      <EmbeddedResource Remove="V1\Gateways\**" />
+      <None Remove="V1\Factories\**" />
+      <None Remove="V1\Gateways\**" />
+    </ItemGroup>
+    <ItemGroup>
       <Content Remove="JsonFile.json" />
     </ItemGroup>
 
@@ -36,8 +46,6 @@
 
   <ItemGroup>
     <Folder Include="terraform\" />
-    <Folder Include="V1\Factories\" />
-    <Folder Include="V1\Gateways\" />
     <Folder Include="V1\UseCase\Interfaces\" />
   </ItemGroup>
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
 using ConfigurationApi.V1.Domain;
+using ConfigurationApi.V1.UseCase;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
@@ -17,11 +18,11 @@ namespace ConfigurationApi.V1.Controllers
     [ApiVersion("1.0")]
     public class ConfigurationController : Controller
     {
-        private readonly IAmazonS3 _client;
+        private readonly IConfigurationUseCase _configurationUseCase;
 
-        public ConfigurationController(IAmazonS3 client)
+        public ConfigurationController(IConfigurationUseCase configurationUseCase)
         {
-            _client = client;
+            _configurationUseCase = configurationUseCase;
         }
 
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
@@ -31,36 +32,9 @@ namespace ConfigurationApi.V1.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string[] types)
         {
-            try
-            {
-                var listOfConfigurations = new List<ApiConfiguration>();
-                var bucketName = Environment.GetEnvironmentVariable("CONFIGURATION_S3_BUCKETNAME");
+            var listOfConfigurations = await _configurationUseCase.Get(types);
 
-                foreach (string type in types)
-                {
-                    GetObjectRequest request = new GetObjectRequest { BucketName = bucketName, Key = type };
-
-                    using (GetObjectResponse response = await _client.GetObjectAsync(request))
-                    using (Stream responseStream = response.ResponseStream)
-                    using (StreamReader reader = new StreamReader(responseStream))
-                    {
-                        string title =
-                            response.Metadata[
-                                "x-amz-meta-title"]; // Assume you have "title" as medata added to the object.
-                        string contentType = response.Headers["Content-Type"];
-                        Console.WriteLine("Object metadata, Title: {0}", title);
-                        Console.WriteLine("Content type: {0}", contentType);
-
-                        listOfConfigurations.Add(JsonConvert.DeserializeObject<ApiConfiguration>(reader.ReadToEnd()));
-                    }
-                }
-
-                return Ok(listOfConfigurations);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return Ok(listOfConfigurations);
         }
     }
 }
