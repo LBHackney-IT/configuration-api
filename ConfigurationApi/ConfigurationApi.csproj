@@ -20,9 +20,6 @@
       <None Remove="V1\Factories\**" />
       <None Remove="V1\Gateways\**" />
     </ItemGroup>
-    <ItemGroup>
-      <Content Remove="JsonFile.json" />
-    </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="6.0.3" />
@@ -47,12 +44,6 @@
   <ItemGroup>
     <Folder Include="terraform\" />
     <Folder Include="V1\UseCase\Interfaces\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="JsonFile.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
