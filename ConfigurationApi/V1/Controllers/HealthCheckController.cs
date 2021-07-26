@@ -11,7 +11,7 @@ namespace ConfigurationApi.V1.Controllers
     {
         public HealthCheckController()
         {
-            
+
         }
 
         [HttpGet]
