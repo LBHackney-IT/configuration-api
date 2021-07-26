@@ -9,6 +9,11 @@ namespace ConfigurationApi.V1.Controllers
     [Produces("application/json")]
     public class HealthCheckController : BaseController
     {
+        public HealthCheckController()
+        {
+            
+        }
+
         [HttpGet]
         [Route("ping")]
         [ProducesResponseType(typeof(Dictionary<string, bool>), 200)]
