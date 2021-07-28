@@ -3,18 +3,27 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Serialization;
+using Amazon;
+using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using ConfigurationApi.V1;
-using ConfigurationApi.V1.Infrastructure;
+using ConfigurationApi.V1.Gateway;
+using ConfigurationApi.V1.UseCase;
 using ConfigurationApi.Versioning;
+using FluentValidation.AspNetCore;
+using Hackney.Core.Logging;
+using Hackney.Core.Middleware.CorrelationId;
+using Hackney.Core.Middleware.Exception;
+using Hackney.Core.Middleware.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -34,13 +43,20 @@ namespace ConfigurationApi
         public IConfiguration Configuration { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
         //TODO update the below to the name of your API
-        private const string ApiName = "Your API Name";
+        private const string ApiName = "Configuration-Api";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services
                 .AddMvc()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()))
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddApiVersioning(o =>
             {
@@ -110,9 +126,11 @@ namespace ConfigurationApi
 
             ConfigureLogging(services, Configuration);
 
+            AWSXRayRecorder.InitializeInstance(Configuration);
+            AWSXRayRecorder.RegisterLogger(LoggingOptions.SystemDiagnostics);
 
-            //TODO: For DynamoDb, remove the line above and uncomment the line below.
-            // services.ConfigureDynamoDB();
+            services.ConfigureLambdaLogging(Configuration);
+            services.AddLogCallAspect();
 
             RegisterGateways(services);
             RegisterUseCases(services);
@@ -140,21 +158,21 @@ namespace ConfigurationApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-
-
-            //TODO: For DynamoDb, remove the line above and uncomment the line below.
-            //services.AddScoped<IExampleGateway, DynamoDbGateway>();
+            services.TryAddScoped<IConfigurationGateway, S3ConfigurationGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-
+            services.TryAddScoped<IConfigurationUseCase, ConfigurationUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            app.UseCorrelation();
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
 
             if (env.IsDevelopment())
             {
@@ -165,9 +183,11 @@ namespace ConfigurationApi
                 app.UseHsts();
             }
 
-            // TODO
-            // If you DON'T use the renaming script, PLEASE replace with your own API name manually
-            app.UseXRay("base-api");
+            app.UseCorrelationId();
+            app.UseLoggingScope();
+            app.UseCustomExceptionHandler(logger);
+            app.UseXRay("configuration-api");
+            app.UseLogCall();
 
 
             //Get All ApiVersions,
