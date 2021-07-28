@@ -20,6 +20,7 @@ functions:
     role: lambdaExecutionRole
     environment:
       ASPNETCORE_ENVIRONMENT:  ${ssm:/housing-tl/${self:provider.stage}/aspnetcore-environment}
+      CONFIGURATION_S3_BUCKETNAME:  ${ssm:/configuration-api/${self:provider.stage}/bucket-name}
     events:
       - http:
           path: /{proxy+}
