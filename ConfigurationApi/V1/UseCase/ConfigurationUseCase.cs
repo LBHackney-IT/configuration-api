@@ -16,16 +16,23 @@ namespace ConfigurationApi.V1.UseCase
         }
 
         [LogCall]
-        public async Task<List<ApiConfiguration>> Get(string[] types)
+        public Task<List<ApiConfiguration>> Get(string[] types)
         {
             var listOfConfigurations = new List<ApiConfiguration>();
-
+            var listOfTasks = new List<Task<ApiConfiguration>>();
             foreach (string type in types)
             {
-                listOfConfigurations.Add(await _configurationGateway.Get(type));
+                listOfTasks.Add(_configurationGateway.Get(type));
             }
 
-            return listOfConfigurations;
+            var results = Task.WhenAll(listOfTasks.ToArray());
+
+            foreach (var result in results.Result)
+            {
+                listOfConfigurations.Add(result);
+            }
+
+            return Task.FromResult(listOfConfigurations);
         }
     }
 }

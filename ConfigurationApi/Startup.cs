@@ -178,8 +178,6 @@ namespace ConfigurationApi
                 .AllowAnyHeader()
                 .AllowAnyMethod());
 
-            app.UseCorrelation();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -192,12 +190,8 @@ namespace ConfigurationApi
             app.UseCorrelationId();
             app.UseLoggingScope();
             app.UseCustomExceptionHandler(logger);
-            app.UseXRay("person-api");
+            app.UseXRay("configuration-api");
             app.UseLogCall();
-
-            // TODO
-            // If you DON'T use the renaming script, PLEASE replace with your own API name manually
-            app.UseXRay("base-api");
 
 
             //Get All ApiVersions,

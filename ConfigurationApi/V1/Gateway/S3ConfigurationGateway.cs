@@ -13,18 +13,18 @@ namespace ConfigurationApi.V1.Gateway
     public class S3ConfigurationGateway : IConfigurationGateway
     {
         private readonly IAmazonS3 _amazonS3Client;
+        private string _bucketName;
 
         public S3ConfigurationGateway(IAmazonS3 amazonS3Client)
         {
             _amazonS3Client = amazonS3Client;
+            _bucketName = Environment.GetEnvironmentVariable("CONFIGURATION_S3_BUCKETNAME");
         }
 
         [LogCall]
         public async Task<ApiConfiguration> Get(string type)
         {
-            var bucketName = Environment.GetEnvironmentVariable("CONFIGURATION_S3_BUCKETNAME");
-
-            GetObjectRequest request = new GetObjectRequest { BucketName = bucketName, Key = type };
+            GetObjectRequest request = new GetObjectRequest { BucketName = _bucketName, Key = type };
 
             using (GetObjectResponse response = await _amazonS3Client.GetObjectAsync(request))
             using (Stream responseStream = response.ResponseStream)
