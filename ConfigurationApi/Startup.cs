@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Amazon;
+using Amazon.S3;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using ConfigurationApi.V1;
@@ -134,6 +135,16 @@ namespace ConfigurationApi
 
             RegisterGateways(services);
             RegisterUseCases(services);
+            RegisterAws(services);
+        }
+
+        private void RegisterAws(IServiceCollection services)
+        {
+            services.TryAddSingleton<IAmazonS3>(sp =>
+            {
+                var clientConfig = new AmazonS3Config() { ForcePathStyle = true };
+                return new AmazonS3Client(clientConfig);
+            });
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
