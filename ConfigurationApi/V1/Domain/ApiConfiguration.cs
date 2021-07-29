@@ -7,7 +7,7 @@ namespace ConfigurationApi.V1.Domain
     {
         public string Type { get; set; }
 
-        public Configuration Configuration { get; set; }
+        public Dictionary<string, object> Configuration { get; set; }
 
         public Dictionary<string, object> FeatureToggles { get; set; }
 

@@ -18,7 +18,8 @@ namespace ConfigurationApi.Tests.V1.Domain
 
             // Assert
             result.Type.Should().Be("First");
-            result.Configuration.ApiUrl.Should().Be("https://first.gov.uk/");
+            result.Configuration.First().Key.Should().Be("ApiUrl");
+            result.Configuration.First().Value.Should().Be("https://first.gov.uk/");
             result.FeatureToggles.First().Key.Should().Be("CreatePerson");
             result.FeatureToggles.First().Value.Should().Be(true);
             result.FeatureToggles.Skip(1).First().Key.Should().Be("EditPerson");
