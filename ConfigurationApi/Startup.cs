@@ -142,7 +142,7 @@ namespace ConfigurationApi
         {
             services.TryAddSingleton<IAmazonS3>(sp =>
             {
-                var clientConfig = new AmazonS3Config() { RegionEndpoint = RegionEndpoint.EUWest2};
+                var clientConfig = new AmazonS3Config() { RegionEndpoint = RegionEndpoint.EUWest2 };
                 return new AmazonS3Client(clientConfig);
             });
         }
