@@ -6,6 +6,7 @@ using Amazon.S3.Model;
 using ConfigurationApi.V1.Domain;
 using Hackney.Core.Logging;
 using Newtonsoft.Json;
+using Exception = System.Exception;
 
 namespace ConfigurationApi.V1.Gateway
 {
@@ -25,11 +26,18 @@ namespace ConfigurationApi.V1.Gateway
         {
             GetObjectRequest request = new GetObjectRequest { BucketName = _bucketName, Key = type };
 
-            using (GetObjectResponse response = await _amazonS3Client.GetObjectAsync(request))
-            using (Stream responseStream = response.ResponseStream)
-            using (StreamReader reader = new StreamReader(responseStream))
+            try
             {
-                return JsonConvert.DeserializeObject<ApiConfiguration>(reader.ReadToEnd());
+                using (GetObjectResponse response = await _amazonS3Client.GetObjectAsync(request))
+                using (Stream responseStream = response.ResponseStream)
+                using (StreamReader reader = new StreamReader(responseStream))
+                {
+                    return JsonConvert.DeserializeObject<ApiConfiguration>(reader.ReadToEnd());
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
     }

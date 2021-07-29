@@ -29,7 +29,8 @@ namespace ConfigurationApi.V1.UseCase
 
             foreach (var result in results.Result)
             {
-                listOfConfigurations.Add(result);
+                if (result != null)
+                    listOfConfigurations.Add(result);
             }
 
             return Task.FromResult(listOfConfigurations);
