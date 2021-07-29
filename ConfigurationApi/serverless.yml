@@ -13,6 +13,7 @@ provider:
 package:
   artifact: ./bin/release/netcoreapp3.1/configuration-api.zip
 
+
 functions:
   ConfigurationApi:
     name: ${self:service}-${self:provider.stage}
