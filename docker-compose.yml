@@ -24,7 +24,7 @@ services:
       - localstack
       
   localstack:
-    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_configuration-api}"
     image: localstack/localstack    
     hostname: awslocal    
     ports:
