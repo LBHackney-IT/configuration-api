@@ -64,7 +64,7 @@ namespace ConfigurationApi.Tests.V1.Infrastructure
             var serviceProvider = services.BuildServiceProvider();
             var s3Client = serviceProvider.GetService<IAmazonS3>();
             s3Client.Should().NotBeNull();
-            s3Client.Config.ServiceURL.Should().Be(string.IsNullOrEmpty(path)? null : path);
+            s3Client.Config.ServiceURL.Should().Be(string.IsNullOrEmpty(path) ? null : path);
         }
     }
 }
