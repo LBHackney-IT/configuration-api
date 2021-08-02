@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using ConfigurationApi.V1.UseCase;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace ConfigurationApi.V1.Controllers
 {
@@ -11,7 +10,6 @@ namespace ConfigurationApi.V1.Controllers
     {
         public HealthCheckController()
         {
-
         }
 
         [HttpGet]
@@ -23,13 +21,5 @@ namespace ConfigurationApi.V1.Controllers
 
             return Ok(result);
         }
-
-        [HttpGet]
-        [Route("error")]
-        public void ThrowError()
-        {
-            ThrowOpsErrorUsecase.Execute();
-        }
-
     }
 }

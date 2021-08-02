@@ -1,12 +1,12 @@
-using System.Collections.Generic;
-using ConfigurationApi.V1;
 using ConfigurationApi.V1.Controllers;
 using FluentAssertions;
+using Hackney.Core.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace ConfigurationApi.Tests.V1.Controllers
 {
@@ -40,7 +40,7 @@ namespace ConfigurationApi.Tests.V1.Controllers
         public void GetCorrelationShouldReturnCorrelationIdWhenExists()
         {
             // Arrange
-            _stubHttpContext.Request.Headers.Add(Constants.CorrelationId, "123");
+            _stubHttpContext.Request.Headers.Add(HeaderConstants.CorrelationId, "123");
 
             // Act
             var result = _sut.GetCorrelationId();

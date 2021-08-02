@@ -18,6 +18,7 @@ namespace ConfigurationApi.Tests
             _factory = new AwsMockWebApplicationFactory<TStartup>();
 
             EnsureEnvVarConfigured("CONFIGURATION_S3_BUCKETNAME", "configuration-api-configurations");
+            EnsureEnvVarConfigured("CONFIGURATION_S3_URL", "http://localhost:4566");
 
             Client = _factory.CreateClient();
 
@@ -32,22 +33,23 @@ namespace ConfigurationApi.Tests
 
         private void CreateS3File()
         {
+            var bucketName = Environment.GetEnvironmentVariable("CONFIGURATION_S3_BUCKETNAME");
             var bucket = S3Client.PutBucketAsync(new PutBucketRequest
             {
-                BucketName = Environment.GetEnvironmentVariable("CONFIGURATION_S3_BUCKETNAME")
-            }).Result;
+                BucketName = bucketName
+            }).GetAwaiter().GetResult();
 
             var testString =
                 "{ \"Type\": \"First\", \"Configuration\": { \"ApiUrl\": \"https://first.gov.uk/\" }, \"FeatureToggles\": { \"CreatePerson\": true, \"EditPerson\": true } }";
 
             var putRequest = new PutObjectRequest();
             putRequest.Key = "First";
-            putRequest.BucketName = Environment.GetEnvironmentVariable("CONFIGURATION_S3_BUCKETNAME");
+            putRequest.BucketName = bucketName;
             putRequest.ContentType = "application/json";
             putRequest.ContentBody = testString;
 
 
-            PutObjectResponse response = S3Client.PutObjectAsync(putRequest).Result;
+            PutObjectResponse response = S3Client.PutObjectAsync(putRequest).GetAwaiter().GetResult();
         }
 
         public void Dispose()
