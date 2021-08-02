@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using ConfigurationApi.V1.Controllers;
-using ConfigurationApi.V1.UseCase;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace ConfigurationApi.Tests.V1.Controllers
 {
@@ -29,12 +28,6 @@ namespace ConfigurationApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
             response.Value.Should().BeEquivalentTo(expected);
-        }
-
-        [Test]
-        public void ThrowErrorThrows()
-        {
-            Assert.Throws<TestOpsErrorException>(_classUnderTest.ThrowError);
         }
     }
 }

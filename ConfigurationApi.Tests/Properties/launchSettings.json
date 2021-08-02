@@ -12,14 +12,14 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "LocalDevelopment"
       }
     },
     "ConfigurationApi.Tests": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "LocalDevelopment",
         "DynamoDb_LocalMode": "true",
         "DynamoDb_LocalServiceUrl": "http://localhost:8000"
       },
