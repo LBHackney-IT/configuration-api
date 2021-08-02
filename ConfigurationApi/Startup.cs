@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.Json.Serialization;
 using Amazon;
 using Amazon.S3;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
-using ConfigurationApi.V1;
 using ConfigurationApi.V1.Gateway;
+using ConfigurationApi.V1.Infrastructure;
 using ConfigurationApi.V1.UseCase;
 using ConfigurationApi.Versioning;
 using FluentValidation.AspNetCore;
@@ -30,6 +24,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace ConfigurationApi
 {
@@ -44,7 +44,6 @@ namespace ConfigurationApi
 
         public IConfiguration Configuration { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
-        //TODO update the below to the name of your API
         private const string ApiName = "Configuration-Api";
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -126,47 +125,16 @@ namespace ConfigurationApi
                     c.IncludeXmlComments(xmlPath);
             });
 
-            ConfigureLogging(services, Configuration);
-
             AWSXRayRecorder.InitializeInstance(Configuration);
             AWSXRayRecorder.RegisterLogger(LoggingOptions.SystemDiagnostics);
 
             services.ConfigureLambdaLogging(Configuration);
             services.AddLogCallAspect();
             services.AddTokenFactory();
+            services.ConfigureS3(Configuration);
 
             RegisterGateways(services);
             RegisterUseCases(services);
-            RegisterAws(services);
-        }
-
-        private void RegisterAws(IServiceCollection services)
-        {
-            services.TryAddSingleton<IAmazonS3>(sp =>
-            {
-                var clientConfig = new AmazonS3Config() { RegionEndpoint = RegionEndpoint.EUWest2 };
-                return new AmazonS3Client(clientConfig);
-            });
-        }
-
-        private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
-        {
-            // We rebuild the logging stack so as to ensure the console logger is not used in production.
-            // See here: https://weblog.west-wind.com/posts/2018/Dec/31/Dont-let-ASPNET-Core-Default-Console-Logging-Slow-your-App-down
-            services.AddLogging(config =>
-            {
-                // clear out default configuration
-                config.ClearProviders();
-
-                config.AddConfiguration(configuration.GetSection("Logging"));
-                config.AddDebug();
-                config.AddEventSourceLogger();
-
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
-                {
-                    config.AddConsole();
-                }
-            });
         }
 
         private static void RegisterGateways(IServiceCollection services)

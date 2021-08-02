@@ -9,29 +9,31 @@ services:
       args:
       - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     ports:
-      - 3000:3000
+      - 3000:3000   
+    links:
+      - localstack-configuration-api
   
   configuration-api-test:
     image: configuration-api-test
     environment:
-      - CONFIGURATION_S3_BUCKETNAME=http://localstack:4566
+      - CONFIGURATION_S3_BUCKETNAME=configuration-api-configurations
+      - CONFIGURATION_S3_URL=http://localstack-configuration-api:4566
     build:
       context: .
       dockerfile: ConfigurationApi.Tests/Dockerfile
       args:
       - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}    
     links:
-      - localstack
+      - localstack-configuration-api
       
-  localstack:
-    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_configuration-api}"
+  localstack-configuration-api:
+    container_name: localstack-configuration-api
     image: localstack/localstack    
     hostname: awslocal    
     ports:
-      - "4566:4566"      
+      - 4566:4566
     environment:
-      - SERVICES=s3:4566
-      - DEFAULT_REGION=eu-west-2
+      - SERVICES=s3
       - DEBUG=1
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOST_TMP_FOLDER=/tmp/localstack      

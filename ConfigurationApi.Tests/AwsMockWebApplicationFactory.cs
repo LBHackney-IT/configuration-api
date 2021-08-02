@@ -1,5 +1,5 @@
-using System;
 using Amazon.S3;
+using ConfigurationApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -11,21 +11,19 @@ namespace ConfigurationApi.Tests
         : WebApplicationFactory<TStartup> where TStartup : class
     {
         public IAmazonS3 S3Client { get; set; }
+        private IConfiguration _configuration;
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureAppConfiguration(b => b.AddEnvironmentVariables())
-                .UseStartup<Startup>();
+            builder.ConfigureAppConfiguration(b =>
+            {
+                b.AddEnvironmentVariables();
+                _configuration = b.Build();
+            }).UseStartup<Startup>();
 
             builder.ConfigureServices(services =>
             {
-                var url = "http://localhost:4566";
-
-                services.AddSingleton<IAmazonS3>(sp =>
-                {
-                    var clientConfig = new AmazonS3Config() { ServiceURL = url, ForcePathStyle = true };
-                    return new AmazonS3Client(clientConfig);
-                });
+                services.ConfigureS3(_configuration);
 
                 var serviceProvider = services.BuildServiceProvider();
                 S3Client = serviceProvider.GetRequiredService<IAmazonS3>();
