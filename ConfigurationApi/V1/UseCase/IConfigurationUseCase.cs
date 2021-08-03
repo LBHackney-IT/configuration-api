@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ConfigurationApi.V1.Domain;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ConfigurationApi.V1.UseCase
 {
