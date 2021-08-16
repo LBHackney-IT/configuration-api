@@ -1,5 +1,4 @@
 using Amazon;
-using Amazon.S3;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using ConfigurationApi.V1.Gateway;
@@ -7,7 +6,7 @@ using ConfigurationApi.V1.Infrastructure;
 using ConfigurationApi.V1.UseCase;
 using ConfigurationApi.Versioning;
 using FluentValidation.AspNetCore;
-using Hackney.Core.DI;
+using Hackney.Core.JWT;
 using Hackney.Core.Logging;
 using Hackney.Core.Middleware.CorrelationId;
 using Hackney.Core.Middleware.Exception;
