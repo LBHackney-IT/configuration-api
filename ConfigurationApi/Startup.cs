@@ -152,7 +152,8 @@ namespace ConfigurationApi
             app.UseCors(builder => builder
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod());
+                .AllowAnyMethod()
+                .WithExposedHeaders("x-correlation-id"));
 
             if (env.IsDevelopment())
             {
