@@ -10,12 +10,12 @@ provider:
   stage: ${opt:stage}
   region: eu-west-2
 
-package:
-  artifact: ./bin/release/netcoreapp3.1/configuration-api.zip
-
 plugins:
   - serverless-associate-waf
   - '@serverless/safeguards-plugin'
+
+package:
+  artifact: ./bin/release/netcoreapp3.1/configuration-api.zip
 
 
 functions:
@@ -35,7 +35,7 @@ functions:
             type: request
             resultTtlInSeconds: 0
             identitySource: method.request.header.Authorization
-            managedExternally: true       
+            managedExternally: true
           cors:
             origin: '*'
             headers:
@@ -131,13 +131,13 @@ resources:
                         - ${ssm:/configuration-api/${self:provider.stage}/bucket-name}
                         - "/*"
 custom:
+  associateWaf:
+    name: Platform_APIs_Web_ACL
+    version: V2
   safeguards:
     - title: Require authorizer
       safeguard: require-authorizer
       path: ./policies
-  associateWaf:
-    name: Platform_APIs_Web_ACL
-    version: V2
   vpcId:
     development: vpc-0d15f152935c8716f
     staging: vpc-064521a7a4109ba31
