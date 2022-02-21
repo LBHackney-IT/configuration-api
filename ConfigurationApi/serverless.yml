@@ -11,6 +11,7 @@ provider:
   region: eu-west-2
 
 plugins:
+  - serverless-associate-waf
   - '@serverless/safeguards-plugin'
 
 package:
@@ -130,6 +131,9 @@ resources:
                         - ${ssm:/configuration-api/${self:provider.stage}/bucket-name}
                         - "/*"
 custom:
+  associateWaf:
+    name: Platform_APIs_Web_ACL
+    version: V2
   safeguards:
     - title: Require authorizer
       safeguard: require-authorizer
