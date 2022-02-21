@@ -84,6 +84,8 @@ commands:
           name: Deploy lambda
           command: |
             cd ./ConfigurationApi/
+            npm i serverless-associate-waf
+            npm i @serverless/safeguards-plugin --save-dev
             sls deploy --stage <<parameters.stage>> --conceal
 
 jobs:
