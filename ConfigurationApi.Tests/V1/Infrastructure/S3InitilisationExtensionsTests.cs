@@ -5,9 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace ConfigurationApi.Tests.V1.Infrastructure
@@ -17,7 +14,7 @@ namespace ConfigurationApi.Tests.V1.Infrastructure
         private readonly Mock<IConfiguration> _mockConfiguration;
 
         private const string ConfigKey = "CONFIGURATION_S3_URL";
-        private const string S3Url = "http://somedomain:4566";
+        private const string S3Url = "http://somedomain:4566/";
 
         public S3InitilisationExtensionsTests()
         {

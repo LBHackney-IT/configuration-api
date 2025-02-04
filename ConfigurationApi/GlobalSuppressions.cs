@@ -5,5 +5,5 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>", Scope = "member", Target = "~M:ConfigurationApi.Startup.RegisterUseCases(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
-[assembly: SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>", Scope = "member", Target = "~M:ConfigurationApi.Startup.RegisterGateways(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
+[assembly: SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>", Scope = "member", Target = "~M:ConfigurationApi.Removed_Startup.RegisterUseCases(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
+[assembly: SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>", Scope = "member", Target = "~M:ConfigurationApi.Removed_Startup.RegisterGateways(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
