@@ -1,25 +1,24 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1
+# Use the official .NET 8 SDK image as the base image
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# disable microsoft telematry
+# Disable Microsoft telemetry
 ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
-
-ARG LBHPACKAGESTOKEN
-ENV LBHPACKAGESTOKEN=$LBHPACKAGESTOKEN
-
-WORKDIR /app
 
 # Install OpenJDK 11
 RUN apt-get update && \
     apt-get install -y openjdk-11-jdk && \
     apt-get clean
 
-# Copy csproj and restore as distinct layers
+# Set the working directory
+WORKDIR /app
 
+# Copy the solution and project files
 COPY ./ConfigurationApi.sln ./
 COPY ./ConfigurationApi/ConfigurationApi.csproj ./ConfigurationApi/
 COPY ./ConfigurationApi.Tests/ConfigurationApi.Tests.csproj ./ConfigurationApi.Tests/
 COPY /NuGet.Config /root/.nuget/NuGet/NuGet.Config
 
+# Restore the .NET dependencies for the projects
 RUN dotnet restore ./ConfigurationApi/ConfigurationApi.csproj
 RUN dotnet restore ./ConfigurationApi.Tests/ConfigurationApi.Tests.csproj
 
@@ -28,5 +27,8 @@ COPY . ./
 RUN dotnet build -c Release -o out
 RUN dotnet publish -c Release -o out
 
+# Expose the port for the application
 EXPOSE ${PORT:-3000}
+
+# Set the entry point for the container
 CMD ASPNETCORE_URLS=http://+:${PORT:-3000} dotnet ./out/ConfigurationApi.dll
