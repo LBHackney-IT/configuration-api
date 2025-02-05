@@ -8,6 +8,11 @@ ENV LBHPACKAGESTOKEN=$LBHPACKAGESTOKEN
 
 WORKDIR /app
 
+# Install OpenJDK 11
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get clean
+
 # Copy csproj and restore as distinct layers
 
 COPY ./ConfigurationApi.sln ./
