@@ -19,7 +19,7 @@ plugins:
   - '@serverless/safeguards-plugin'
 
 package:
-  artifact: ./bin/release/netcoreapp3.1/configuration-api.zip
+  artifact: ./bin/release/net8.0/configuration-api.zip
 
 functions:
   ConfigurationApi:
