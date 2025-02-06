@@ -4,11 +4,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 # Disable Microsoft telemetry
 ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
 
-# Install OpenJDK 11
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk && \
-    apt-get clean
-
 # Set the working directory
 WORKDIR /app
 
