@@ -2,20 +2,22 @@ using System;
 using System.Net.Http;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit;
 
 namespace ConfigurationApi.Tests
 {
-    public class AwsIntegrationTests<TStartup> : IDisposable where TStartup : class
+    public class AwsIntegrationTests : IDisposable
     {
         public HttpClient Client { get; private set; }
         public IAmazonS3 S3Client => _factory?.S3Client;
 
-        private readonly AwsMockWebApplicationFactory<TStartup> _factory;
+        private readonly AwsMockWebApplicationFactory<Program> _factory;
+        private bool _disposed = false;
 
         public AwsIntegrationTests()
         {
-            _factory = new AwsMockWebApplicationFactory<TStartup>();
+            _factory = new AwsMockWebApplicationFactory<Program>();
 
             EnsureEnvVarConfigured("CONFIGURATION_S3_BUCKETNAME", "configuration-api-configurations");
             EnsureEnvVarConfigured("CONFIGURATION_S3_URL", "http://localhost:4566");
@@ -25,7 +27,7 @@ namespace ConfigurationApi.Tests
             CreateS3File();
         }
 
-        private void EnsureEnvVarConfigured(string name, string defaultValue)
+        private static void EnsureEnvVarConfigured(string name, string defaultValue)
         {
             if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(name)))
                 Environment.SetEnvironmentVariable(name, defaultValue);
@@ -42,25 +44,40 @@ namespace ConfigurationApi.Tests
             var testString =
                 "{ \"Type\": \"First\", \"Configuration\": { \"ApiUrl\": \"https://first.gov.uk/\" }, \"FeatureToggles\": { \"CreatePerson\": true, \"EditPerson\": true } }";
 
-            var putRequest = new PutObjectRequest();
-            putRequest.Key = "First";
-            putRequest.BucketName = bucketName;
-            putRequest.ContentType = "application/json";
-            putRequest.ContentBody = testString;
-
+            var putRequest = new PutObjectRequest
+            {
+                Key = "First",
+                BucketName = bucketName,
+                ContentType = "application/json",
+                ContentBody = testString
+            };
 
             PutObjectResponse response = S3Client.PutObjectAsync(putRequest).GetAwaiter().GetResult();
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    Client?.Dispose();
+                    _factory?.Dispose();
+                }
+
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 
-
     [CollectionDefinition("Aws collection", DisableParallelization = true)]
-    public class DynamoDbCollection : ICollectionFixture<AwsIntegrationTests<Startup>>
+    public class DynamoDbCollection : ICollectionFixture<AwsIntegrationTests>
     {
         // This class has no code, and is never created. Its purpose is simply
         // to be the place to apply [CollectionDefinition] and all the
