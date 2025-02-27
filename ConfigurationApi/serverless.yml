@@ -123,8 +123,8 @@ resources:
                     - "s3:GetObject"
                     - "s3:ListBucket"
                   Resource:
-                    - 'Fn::Sub': 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}'
-                    - 'Fn::Sub': 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}/*'
+                    - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}'
+                    - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}/*'
 
 custom:
   associateWaf:
