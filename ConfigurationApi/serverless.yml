@@ -6,11 +6,7 @@ provider:
   tracing:
     lambda: true
     apiGateway: true
-  vpc:
-    securityGroupIds:
-      - ${self:custom.vpc.${opt:stage}.securityGroupIds}
-    subnetIds:
-      - ${self:custom.vpc.${opt:stage}.subnetIds}
+  vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
   region: eu-west-2
 
@@ -62,7 +58,7 @@ resources:
         GroupName: ${self:service}-${self:provider.stage}-sg
         GroupDescription: Allow all outbound traffic
         SecurityGroupEgress:
-          - IpProtocol: "-1"
+          - IpProtocol: -1
             CidrIp: 0.0.0.0/0
         VpcId: ${self:custom.vpcId.${opt:stage}}
 
@@ -127,8 +123,8 @@ resources:
                     - "s3:GetObject"
                     - "s3:ListBucket"
                   Resource:
-                    - 'Fn::Sub': 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}'
-                    - 'Fn::Sub': 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}/*'
+                    - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}'
+                    - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}/*'
 
 custom:
   associateWaf:
