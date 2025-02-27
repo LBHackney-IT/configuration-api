@@ -6,11 +6,7 @@ provider:
   tracing:
     lambda: true
     apiGateway: true
-  vpc:
-    securityGroupIds:
-      - ${self:custom.vpc.${opt:stage}.securityGroupIds}
-    subnetIds:
-      - ${self:custom.vpc.${opt:stage}.subnetIds}
+  vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
   region: eu-west-2
 
