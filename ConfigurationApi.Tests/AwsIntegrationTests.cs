@@ -7,17 +7,17 @@ using Xunit;
 
 namespace ConfigurationApi.Tests
 {
-    public class AwsIntegrationTests : IDisposable
+    public class AwsIntegrationTests<TStartup> : IDisposable where TStartup : class
     {
         public HttpClient Client { get; private set; }
         public IAmazonS3 S3Client => _factory?.S3Client;
 
-        private readonly AwsMockWebApplicationFactory<Program> _factory;
+        private readonly AwsMockWebApplicationFactory<TStartup> _factory;
         private bool _disposed = false;
 
         public AwsIntegrationTests()
         {
-            _factory = new AwsMockWebApplicationFactory<Program>();
+            _factory = new AwsMockWebApplicationFactory<TStartup>();
 
             EnsureEnvVarConfigured("CONFIGURATION_S3_BUCKETNAME", "configuration-api-configurations");
             EnsureEnvVarConfigured("CONFIGURATION_S3_URL", "http://localhost:4566");
@@ -77,7 +77,7 @@ namespace ConfigurationApi.Tests
     }
 
     [CollectionDefinition("Aws collection", DisableParallelization = true)]
-    public class DynamoDbCollection : ICollectionFixture<AwsIntegrationTests>
+    public class DynamoDbCollection : ICollectionFixture<AwsIntegrationTests<Startup>>
     {
         // This class has no code, and is never created. Its purpose is simply
         // to be the place to apply [CollectionDefinition] and all the
