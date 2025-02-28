@@ -15,7 +15,6 @@ COPY . .
 
 RUN dotnet restore
 
-RUN dotnet build -c Release -o out ConfigurationApi/ConfigurationApi.csproj
-RUN dotnet build -c debug -o out ConfigurationApi.Tests/ConfigurationApi.Tests.csproj
+RUN dotnet build --no-restore
 
 ENTRYPOINT ["dotnet", "test", "--collect", "XPlat Code Coverage;Format=opencover", "--results-directory", "./coverage"]
