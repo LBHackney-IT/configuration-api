@@ -126,6 +126,11 @@ jobs:
       - run:
           name: Run tests
           command: docker-compose run configuration-api-test
+      - run:
+          name: Prepare the report
+          command: |
+            mkdir coverage
+            docker cp $(docker ps -aqf "name=configuration-api-test"):/app/coverage ./
   assume-role-development:
     executor: docker-python
     steps:
