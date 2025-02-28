@@ -20,7 +20,7 @@ namespace ConfigurationApi.Tests
             {
                 b.AddEnvironmentVariables();
                 _configuration = b.Build();
-            }).UseStartup<Program>();
+            }).UseStartup<TStartup>();
 
             builder.ConfigureServices(services =>
             {

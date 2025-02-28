@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 using System;
 using Xunit;
 using FluentAssertions;
+using ConfigurationApi;
 
 
 [Collection("Aws collection")]
 public class GetConfigurationByName
 {
-    private readonly AwsIntegrationTests _awsFixture;
+    private readonly AwsIntegrationTests<Startup> _awsFixture;
     public HttpClient Client { get; set; }
 
-    public GetConfigurationByName(AwsIntegrationTests awsFixture)
+    public GetConfigurationByName(AwsIntegrationTests<Startup> awsFixture)
     {
         _awsFixture = awsFixture;
         Client = _awsFixture.Client;
