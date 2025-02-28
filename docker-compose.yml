@@ -23,6 +23,7 @@ services:
       dockerfile: ConfigurationApi.Tests/Dockerfile
       args:
       - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}    
+      - SONAR_TOKEN=${SONAR_TOKEN}
     links:
       - localstack-configuration-api
       
