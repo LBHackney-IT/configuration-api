@@ -218,6 +218,12 @@ workflows:
               ignore:
                 - master
                 - release
+      - deploy-to-development:
+          context:
+            - api-nuget-token-context
+            - "Serverless Framework"
+          requires:
+            - assume-role-development
       - preview-development-terraform:
           requires:
             - assume-role-development
