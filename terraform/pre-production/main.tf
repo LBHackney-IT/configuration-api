@@ -71,8 +71,8 @@ data "aws_iam_policy_document" "s3_allow_ssl_requests_only" {
       identifiers = ["*"]
     }
     resources = [
-      aws_s3_bucket.configurations.arn,
-      "${aws_s3_bucket.configurations.arn}/*",
+      aws_s3_bucket.configuration.arn,
+      "${aws_s3_bucket.configuration.arn}/*",
     ]
     condition {
       test     = "Bool"
