@@ -373,7 +373,7 @@ workflows:
           type: approval
           filters:
             branches:
-              only: ts-2045-add-pre-production-workflows
+              only: release
       - assume-role-pre-production:
           context: api-assume-role-housing-pre-production-context
           requires:
