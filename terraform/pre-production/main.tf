@@ -60,3 +60,31 @@ resource "aws_ssm_parameter" "configurations" {
   type  = "String"
   value = aws_s3_bucket.configuration.id
 }
+
+data "aws_iam_policy_document" "s3_allow_ssl_requests_only" {
+  statement {
+    sid     = "AllowSSLRequestsOnly"
+    effect  = "Deny"
+    actions = ["s3:*"]
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    resources = [
+      aws_s3_bucket.configurations.arn,
+      "${aws_s3_bucket.configurations.arn}/*",
+    ]
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values = [
+        "false"
+      ]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = aws_s3_bucket.configuration.id
+  policy = data.aws_iam_policy_document.s3_allow_ssl_requests_only.json
+}
