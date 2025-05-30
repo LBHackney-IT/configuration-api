@@ -392,8 +392,8 @@ workflows:
   deploy-code-pre-production:
     jobs:
       - build-and-test:
-        filters:
-          branches:
+          filters:
+            branches:
               only: release
           context: 
             - api-nuget-token-context
