@@ -40,11 +40,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "enable_encryption
   }
 }
 
-resource "aws_s3_bucket_acl" "acl" {
-  bucket = aws_s3_bucket.configuration.id
-  acl    = "private"
-}
-
 resource "aws_s3_bucket_versioning" "versioning" {
   bucket = aws_s3_bucket.configuration.id
   versioning_configuration {
