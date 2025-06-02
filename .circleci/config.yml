@@ -191,6 +191,26 @@ jobs:
     steps:
       - deploy-lambda:
           stage: "production"
+  assume-role-pre-production:
+    executor: docker-python
+    steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_PRE_PRODUCTION
+  preview-pre-production-terraform:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "pre-production"
+  terraform-init-and-apply-pre-production:
+    executor: docker-terraform
+    steps:
+      - terraform-init-then-apply:
+          environment: "pre-production"
+  deploy-to-pre-production:
+    executor: docker-dotnet
+    steps:
+      - deploy-lambda:
+          stage: "pre-production"
 
 workflows:
   feature:
@@ -346,3 +366,45 @@ workflows:
           filters:
             branches:
               only: release
+
+  deploy-terraform-pre-production:
+    jobs:
+      - permit-pre-production-terraform-workflow:
+          type: approval
+          filters:
+            branches:
+              only: release
+      - assume-role-pre-production:
+          context: api-assume-role-housing-pre-production-context
+          requires:
+            - permit-pre-production-terraform-workflow
+      - preview-pre-production-terraform:
+          requires:
+            - assume-role-pre-production
+      - permit-pre-production-terraform-deployment:
+          type: approval
+          requires:
+            - preview-pre-production-terraform
+      - terraform-init-and-apply-pre-production:
+          requires:
+            - permit-pre-production-terraform-deployment
+
+  deploy-code-pre-production:
+    jobs:
+      - build-and-test:
+          filters:
+            branches:
+              only: release
+          context: 
+            - api-nuget-token-context
+            - SonarCloud
+      - assume-role-pre-production:
+          context: api-assume-role-housing-pre-production-context
+          requires:
+            - build-and-test
+      - deploy-to-pre-production:
+          context:
+          - api-nuget-token-context
+          - "Serverless Framework"
+          requires:
+            - assume-role-pre-production        
