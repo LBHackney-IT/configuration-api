@@ -106,17 +106,17 @@ resources:
                     - "lambda:InvokeFunction"
                   Resource: "*"
 
-          - PolicyName: s3Access
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - "s3:GetObject"
-                    - "s3:ListBucket"
-                  Resource:
-                    - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}'
-                    - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}/*'
+          # - PolicyName: s3Access
+          #   PolicyDocument:
+          #     Version: '2012-10-17'
+          #     Statement:
+          #       - Effect: Allow
+          #         Action:
+          #           - "s3:GetObject"
+          #           - "s3:ListBucket"
+          #         Resource:
+          #           - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}'
+          #           - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}/*'
 
 custom:
   authorizerArns:
