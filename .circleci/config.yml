@@ -136,9 +136,6 @@ workflows:
           type: approval
           requires:
             - terraform-init-and-apply-to-disaster-recovery
-          filters:
-            branches:
-              only: release
       - deploy-to-disaster-recovery:
           context:
             - api-nuget-token-context
