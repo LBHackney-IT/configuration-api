@@ -29,7 +29,7 @@ locals {
 
 terraform {
   backend "s3" {
-    bucket  = "terraform-state-housing-production"
+    bucket  = "terraform-state-disaster-recovery"
     encrypt = true
     region  = "eu-west-2"
     key     = "services/configuration-api/state"
@@ -37,19 +37,19 @@ terraform {
 }
 
 resource "aws_s3_bucket" "configuration" {
-  bucket = "configuration-api-configurations-production"
+  bucket = "configuration-api-configurations-disaster-recovery"
   acl    = "private"
   tags = {
     Name        = "Configuration Api Bucket"
-    Environment = "Dev"
+    # Environment = "Dev"
   }
 }
 
-resource "aws_ssm_parameter" "configurations" {
-  name  = "/configuration-api/production/bucket-name"
-  type  = "String"
-  value = aws_s3_bucket.configuration.id
-}
+# resource "aws_ssm_parameter" "configurations" {
+#   name  = "/configuration-api/production/bucket-name"
+#   type  = "String"
+#   value = aws_s3_bucket.configuration.id
+# }
 
 module "configuration_api_cloudwatch_dashboard" {
   source                  = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/cloudwatch/dashboards/api-dashboard"
@@ -60,15 +60,15 @@ module "configuration_api_cloudwatch_dashboard" {
   no_sns_widget_dashboard = false
 }
 
-data "aws_ssm_parameter" "cloudwatch_topic_arn" {
-  name = "/housing-tl/${var.environment_name}/cloudwatch-alarms-topic-arn"
-}
+# data "aws_ssm_parameter" "cloudwatch_topic_arn" {
+#   name = "/housing-tl/${var.environment_name}/cloudwatch-alarms-topic-arn"
+# }
 
-module "api-alarm" {
-  source           = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/cloudwatch/api-alarm"
-  environment_name = var.environment_name
-  api_name         = "configuration-api"
-  alarm_period     = "300"
-  error_threshold  = "1"
-  sns_topic_arn    = data.aws_ssm_parameter.cloudwatch_topic_arn.value
-}
+# module "api-alarm" {
+#   source           = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/cloudwatch/api-alarm"
+#   environment_name = var.environment_name
+#   api_name         = "configuration-api"
+#   alarm_period     = "300"
+#   error_threshold  = "1"
+#   sns_topic_arn    = data.aws_ssm_parameter.cloudwatch_topic_arn.value
+# }

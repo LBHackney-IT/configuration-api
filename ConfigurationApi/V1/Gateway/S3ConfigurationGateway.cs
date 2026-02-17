@@ -26,19 +26,19 @@ namespace ConfigurationApi.V1.Gateway
         {
             GetObjectRequest request = new GetObjectRequest { BucketName = _bucketName, Key = type };
 
-            try
-            {
+            // try
+            // {
                 using (GetObjectResponse response = await _amazonS3Client.GetObjectAsync(request))
                 using (Stream responseStream = response.ResponseStream)
                 using (StreamReader reader = new StreamReader(responseStream))
                 {
                     return JsonConvert.DeserializeObject<ApiConfiguration>(reader.ReadToEnd());
                 }
-            }
-            catch
-            {
-                return null;
-            }
+            // }
+            // catch
+            // {
+            //     return null;
+            // }
         }
     }
 }

@@ -29,12 +29,12 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
-          authorizer:
-            arn: ${self:custom.authorizerArns.${opt:stage}}
-            type: request
-            resultTtlInSeconds: 0
-            identitySource: method.request.header.Authorization
-            managedExternally: true
+          # authorizer:
+          #   arn: ${self:custom.authorizerArns.${opt:stage}}
+          #   type: request
+          #   resultTtlInSeconds: 0
+          #   identitySource: method.request.header.Authorization
+          #   managedExternally: true
           cors:
             origin: '*'
             headers:
@@ -53,15 +53,15 @@ functions:
 
 resources:
   Resources:
-    LambdaSecurityGroup:
-      Type: AWS::EC2::SecurityGroup
-      Properties:
-        GroupName: ${self:service}-${self:provider.stage}-sg
-        GroupDescription: Allow all outbound traffic
-        SecurityGroupEgress:
-          - IpProtocol: -1
-            CidrIp: 0.0.0.0/0
-        VpcId: ${self:custom.vpcId.${opt:stage}}
+    # LambdaSecurityGroup:
+    #   Type: AWS::EC2::SecurityGroup
+    #   Properties:
+    #     GroupName: ${self:service}-${self:provider.stage}-sg
+    #     GroupDescription: Allow all outbound traffic
+    #     SecurityGroupEgress:
+    #       - IpProtocol: -1
+    #         CidrIp: 0.0.0.0/0
+    #     VpcId: ${self:custom.vpcId.${opt:stage}}
 
     lambdaExecutionRole:
       Type: AWS::IAM::Role
@@ -80,22 +80,22 @@ resources:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
           - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
         Policies:
-          - PolicyName: manageLogs
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
-                  Resource:
-                    - 'Fn::Join':
-                        - ':'
-                        - - 'arn:aws:logs'
-                          - Ref: 'AWS::Region'
-                          - Ref: 'AWS::AccountId'
-                          - 'log-group:/aws/lambda/*:*:*'
+          # - PolicyName: manageLogs
+          #   PolicyDocument:
+          #     Version: '2012-10-17'
+          #     Statement:
+          #       - Effect: Allow
+          #         Action:
+          #           - logs:CreateLogGroup
+          #           - logs:CreateLogStream
+          #           - logs:PutLogEvents
+          #         Resource:
+          #           - 'Fn::Join':
+          #               - ':'
+          #               - - 'arn:aws:logs'
+          #                 - Ref: 'AWS::Region'
+          #                 - Ref: 'AWS::AccountId'
+          #                 - 'log-group:/aws/lambda/*:*:*'
 
           - PolicyName: lambdaInvocation
             PolicyDocument:
@@ -115,8 +115,8 @@ resources:
                     - "s3:GetObject"
                     - "s3:ListBucket"
                   Resource:
-                    - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}'
-                    - 'arn:aws:s3:::${ssm:/configuration-api/${self:provider.stage}/bucket-name}/*'
+                    - 'arn:aws:s3:::configuration-api-configurations-disaster-recovery'
+                    - 'arn:aws:s3:::configuration-api-configurations-disaster-recovery/*'
 
 custom:
   authorizerArns:
@@ -134,33 +134,12 @@ custom:
       path: ./policies
 
   vpcId:
-    development: vpc-0d15f152935c8716f
-    staging: vpc-064521a7a4109ba31
     production: vpc-0ce853ddb64e8fb3c
-    pre-production: vpc-062a957b99c8b12e6
 
   vpc:
-    development:
-      securityGroupIds:
-        - Ref: LambdaSecurityGroup
-      subnetIds:
-        - subnet-0140d06fb84fdb547
-        - subnet-05ce390ba88c42bfd
-    staging:
-      securityGroupIds:
-        - Ref: LambdaSecurityGroup
-      subnetIds:
-        - subnet-0743d86e9b362fa38
-        - subnet-0ea0020a44b98a2ca
     production:
       securityGroupIds:
-        - Ref: LambdaSecurityGroup
+        - sg-0b7be628d680f9e5f
       subnetIds:
-        - subnet-06a697d86a9b6ed01
-        - subnet-0beb266003a56ca82
-    pre-production:
-      securityGroupIds:
-        - Ref: LambdaSecurityGroup
-      subnetIds:
-        - subnet-08aa35159a8706faa
-        - subnet-0b848c5b14f841dfb
+        - subnet-05e595c59b7d6c8df
+        - subnet-0e6bc9b4ac24493cc
