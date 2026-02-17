@@ -45,11 +45,11 @@ resource "aws_s3_bucket" "configuration" {
   }
 }
 
-resource "aws_ssm_parameter" "configurations" {
-  name  = "/configuration-api/production/bucket-name"
-  type  = "String"
-  value = aws_s3_bucket.configuration.id
-}
+# resource "aws_ssm_parameter" "configurations" {
+#   name  = "/configuration-api/production/bucket-name"
+#   type  = "String"
+#   value = aws_s3_bucket.configuration.id
+# }
 
 module "configuration_api_cloudwatch_dashboard" {
   source                  = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/cloudwatch/dashboards/api-dashboard"
