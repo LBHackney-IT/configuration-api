@@ -125,18 +125,6 @@ jobs:
           stage: "production"
 
 workflows:
-  feature:
-    jobs:
-      - assume-role-disaster-recovery:
-          context: api-assume-role-housing-disaster-recovery-context
-          filters:
-            branches:
-              ignore:
-                - master
-                - release
-      - preview-disaster-recovery-terraform:
-          requires:
-            - assume-role-disaster-recovery
   disaster-recovery:
       jobs:
       - assume-role-disaster-recovery:
