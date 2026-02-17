@@ -112,17 +112,17 @@ jobs:
     executor: docker-terraform
     steps:
       - terraform-init-then-apply:
-          environment: "disaster-recovery"
+          environment: "production"
   preview-disaster-recovery-terraform:
     executor: docker-terraform
     steps:
       - terraform-preview:
-          environment: "disaster-recovery"
+          environment: "production"
   deploy-to-disaster-recovery:
     executor: docker-dotnet
     steps:
       - deploy-lambda:
-          stage: "disaster-recovery"
+          stage: "production"
 
 workflows:
   feature:
