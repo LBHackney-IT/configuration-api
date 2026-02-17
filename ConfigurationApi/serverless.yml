@@ -79,23 +79,23 @@ resources:
         ManagedPolicyArns:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
           - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
-        Policies:
-          - PolicyName: manageLogs
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
-                  Resource:
-                    - 'Fn::Join':
-                        - ':'
-                        - - 'arn:aws:logs'
-                          - Ref: 'AWS::Region'
-                          - Ref: 'AWS::AccountId'
-                          - 'log-group:/aws/lambda/*:*:*'
+        # Policies:
+          # - PolicyName: manageLogs
+          #   PolicyDocument:
+          #     Version: '2012-10-17'
+          #     Statement:
+          #       - Effect: Allow
+          #         Action:
+          #           - logs:CreateLogGroup
+          #           - logs:CreateLogStream
+          #           - logs:PutLogEvents
+          #         Resource:
+          #           - 'Fn::Join':
+          #               - ':'
+          #               - - 'arn:aws:logs'
+          #                 - Ref: 'AWS::Region'
+          #                 - Ref: 'AWS::AccountId'
+          #                 - 'log-group:/aws/lambda/*:*:*'
 
           - PolicyName: lambdaInvocation
             PolicyDocument:
