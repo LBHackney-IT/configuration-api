@@ -41,7 +41,7 @@ resource "aws_s3_bucket" "configuration" {
   acl    = "private"
   tags = {
     Name        = "Configuration Api Bucket"
-    Environment = "Dev"
+    # Environment = "Dev"
   }
 }
 
