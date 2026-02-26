@@ -6,7 +6,6 @@ using ConfigurationApi.V1.Infrastructure;
 using ConfigurationApi.V1.UseCase;
 using ConfigurationApi.Versioning;
 using FluentValidation.AspNetCore;
-using Hackney.Core.JWT;
 using Hackney.Core.Logging;
 using Hackney.Core.Middleware.CorrelationId;
 using Hackney.Core.Middleware.Exception;
@@ -129,7 +128,6 @@ namespace ConfigurationApi
 
             services.ConfigureLambdaLogging(Configuration);
             services.AddLogCallAspect();
-            services.AddTokenFactory();
             services.ConfigureS3(Configuration);
 
             RegisterGateways(services);
