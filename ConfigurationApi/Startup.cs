@@ -6,6 +6,7 @@ using ConfigurationApi.V1.Infrastructure;
 using ConfigurationApi.V1.UseCase;
 using ConfigurationApi.Versioning;
 using FluentValidation.AspNetCore;
+using Hackney.Core.JWT;
 using Hackney.Core.Logging;
 using Hackney.Core.Middleware.CorrelationId;
 using Hackney.Core.Middleware.Exception;
@@ -128,6 +129,10 @@ namespace ConfigurationApi
 
             services.ConfigureLambdaLogging(Configuration);
             services.AddLogCallAspect();
+            // Most opaque design - despite appearing to be unused within this repo
+            // (no direct references, nor Authorization core is used), this is actually
+            // used by the Logging core to print user email.
+            services.AddTokenFactory();
             services.ConfigureS3(Configuration);
 
             RegisterGateways(services);
