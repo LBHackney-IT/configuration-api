@@ -129,6 +129,9 @@ namespace ConfigurationApi
 
             services.ConfigureLambdaLogging(Configuration);
             services.AddLogCallAspect();
+            // Most opaque design - despite appearing to be unused within this repo
+            // (no direct references, nor Authorization core is used), this is actually
+            // used by the Logging Middleware core to print user email.
             services.AddTokenFactory();
             services.ConfigureS3(Configuration);
 
