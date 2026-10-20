@@ -66,3 +66,6 @@ tmp/
 
 # Ignore local stack as it is not required on GitHub (it's auto generated)
 .localstack 
+
+# Local environment file (contains secrets - use .env.sample as the template)
+.env
