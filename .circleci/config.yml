@@ -56,25 +56,6 @@ commands:
           command: |
             cd ./terraform/<<parameters.environment>>/
             terraform apply -auto-approve
-  terraform-init-then-destroy:
-    description: "Initializes and destroys terraform configuration"
-    parameters:
-      environment:
-        type: string
-    steps:
-      - *attach_workspace
-      - checkout
-      - run:
-          command: |
-            cd ./terraform/<<parameters.environment>>/
-            terraform get -update=true
-            terraform init
-          name: get and init
-      - run:
-          name: destroy
-          command: |
-            cd ./terraform/<<parameters.environment>>/
-            terraform destroy -auto-approve
   terraform-preview:
     description: "Gives a preview for Terraform configuration changes."
     parameters:
@@ -120,44 +101,6 @@ commands:
             npm i serverless-associate-waf
             npm i @serverless/safeguards-plugin --save-dev
             sls deploy --stage <<parameters.stage>> --conceal
-  remove-lambda:
-    description: "Removes the API Serverless stack"
-    parameters:
-      stage:
-        type: string
-    steps:
-      - *attach_workspace
-      - checkout
-      - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_20.x | bash -
-            apt-get update && apt-get install -y awscli nodejs
-      - run:
-          name: Install serverless CLI
-          command: npm i -g serverless
-      - run:
-          name: Remove lambda
-          command: |
-            cd ./ConfigurationApi/
-            npm i serverless-associate-waf
-            npm i @serverless/safeguards-plugin --save-dev
-            if aws cloudformation describe-stacks \
-              --stack-name configuration-api-<<parameters.stage>> \
-              --region eu-west-2 >/dev/null 2>/tmp/cloudformation-error; then
-              sls remove --stage <<parameters.stage>>
-            else
-              error=$(</tmp/cloudformation-error)
-              case "$error" in
-                *does\ not\ exist*)
-                  echo "Serverless stack configuration-api-<<parameters.stage>> is already removed."
-                  ;;
-                *)
-                  printf '%s\n' "$error" >&2
-                  exit 1
-                  ;;
-              esac
-            fi
 
 jobs:
   check-code-formatting:
@@ -249,21 +192,6 @@ jobs:
     steps:
       - deploy-lambda:
           stage: "production"
-  assume-role-pre-production:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_PRE_PRODUCTION
-  remove-pre-production-lambda:
-    executor: docker-dotnet
-    steps:
-      - remove-lambda:
-          stage: "pre-production"
-  terraform-init-and-destroy-pre-production:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-destroy:
-          environment: "pre-production"
 
 workflows:
   feature:
@@ -419,20 +347,3 @@ workflows:
           filters:
             branches:
               only: release
-
-  teardown-pre-production:
-    jobs:
-      - assume-role-pre-production:
-          context: api-assume-role-housing-pre-production-context
-          filters:
-            branches:
-              only: feat/ssi-1393-remove-pre-prod-config
-      - remove-pre-production-lambda:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - assume-role-pre-production
-      - terraform-init-and-destroy-pre-production:
-          requires:
-            - remove-pre-production-lambda
