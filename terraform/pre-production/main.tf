@@ -22,7 +22,8 @@ terraform {
 }
 
 resource "aws_s3_bucket" "configuration" {
-  bucket = "configuration-api-configurations-pre-production"
+  bucket        = "configuration-api-configurations-pre-production"
+  force_destroy = true
   tags = {
     Name        = "Configuration Api Bucket"
     Environment = var.environment_name
