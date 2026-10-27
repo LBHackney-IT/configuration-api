@@ -145,7 +145,7 @@ commands:
             if aws cloudformation describe-stacks \
               --stack-name configuration-api-<<parameters.stage>> \
               --region eu-west-2 >/dev/null 2>/tmp/cloudformation-error; then
-              sls remove --stage <<parameters.stage>> --conceal
+              sls remove --stage <<parameters.stage>>
             else
               error=$(</tmp/cloudformation-error)
               case "$error" in
@@ -426,19 +426,13 @@ workflows:
           context: api-assume-role-housing-pre-production-context
           filters:
             branches:
-              only: master
+              only: feat/ssi-1393-remove-pre-prod-config
       - remove-pre-production-lambda:
           context:
             - api-nuget-token-context
             - "Serverless Framework"
           requires:
             - assume-role-pre-production
-          filters:
-            branches:
-              only: master
       - terraform-init-and-destroy-pre-production:
           requires:
             - remove-pre-production-lambda
-          filters:
-            branches:
-              only: master
