@@ -1,170 +1,135 @@
-# LBH Base API
+# Configuration API
 
-Base API is a boilerplate code for being reused for new APIs for LBH
+The Configuration API is the London Borough of Hackney (LBH) **MTFH** service that serves **per-application
+configuration and feature toggles**. Each application's configuration is stored as a JSON document in S3,
+keyed by the configuration type, and this API returns the requested types to the calling application.
+
+It is a read-only, S3-backed API.
 
 ## Stack
 
-- .NET Core as a web framework.
-- nUnit as a test framework.
+- **.NET 10** (`net10.0`) — ASP.NET Core Web API hosted on **AWS Lambda** via `Amazon.Lambda.AspNetCoreServer`
+  (the managed `dotnet10` runtime).
+- **Amazon S3** as the configuration store (`AWSSDK.S3`).
+- **Swashbuckle** for Swagger/OpenAPI, **FluentValidation** for request validation.
+- **MVC API versioning** (URL segment reader).
+- **AWS X-Ray** for tracing.
+- **NUnit** and **xUnit** tests, with FluentAssertions, Moq, AutoFixture and Bogus.
 
-## Dependencies
+## Endpoints
 
-- Universal Housing Simulator
+Versioning uses `UrlSegmentApiVersionReader` with `DefaultApiVersion = 1.0`; the controller is decorated
+`[ApiVersion("1.0")]`.
 
-## Contributing
+| Verb | Route | Request | Response |
+| --- | --- | --- | --- |
+| GET | `/api/v1/configuration` | Query: `types` — a repeated query parameter (`?types=First&types=Second`), bound to `string[]` | `200` → `List<ApiConfiguration>`, one entry per configuration key found. Keys that do not exist in S3 are silently omitted. Also declares `500`. |
+| GET | `/api/v1/healthcheck/ping` | — | `200` → `{ "success": true }`. Unversioned (the controller carries no `[ApiVersion]`, so it is absent from the Swagger documents) and does not touch S3. |
+| GET | `/swagger` | — | Swagger UI / OpenAPI document, one document per API version. |
 
-### Setup
+`ApiConfiguration` contains `Type`, `Configuration` (a dictionary of settings) and `FeatureToggles`
+(a dictionary of toggle names to enabled/disabled).
 
-1. Install [Docker][docker-download].
-2. Install [AWS CLI][AWS-CLI].
-3. Clone this repository.
-4. Rename the initial template.
-5. Open it in your IDE.
+All endpoints sit behind the API Gateway request authorizer and API key.
 
-### Renaming
+## Data sources and external dependencies
 
-The renaming of `base-api` into `SomethingElseApi` can be done by running a Renamer powershell script. To do so:
-1. Open the powershell and navigate to this directory's root.
-2. Run the script using the following command:
-```
-.\Renamer.ps1 -apiName My_Api
-```
+| Dependency | Detail |
+| --- | --- |
+| S3 bucket | `configuration-api-configurations-{development\|staging\|production\|pre-production}` (Terraform). The bucket name is read from `CONFIGURATION_S3_BUCKETNAME`. |
+| S3 object layout | One JSON object per configuration type — the object **key is the requested configuration type** (`?types=X` reads object `X`). |
+| S3 IAM | `s3:GetObject` and `s3:ListBucket` on the bucket and `bucket/*`. Pre-production additionally enables SSE, versioning, public-access-block and a bucket policy. |
+| AWS region | `eu-west-2`. |
+| Local S3 | **LocalStack** (`localstack/localstack`, service `s3`, port 4566) from `docker-compose.yml`. Tests point at it with `CONFIGURATION_S3_URL` (default `http://localhost:4566`) and bucket `configuration-api-configurations`, using path-style addressing and dummy credentials. |
+| AWS X-Ray | Distributed tracing; `AWSXRayDaemonWriteAccess` on the Lambda role. |
+| AWS SSM Parameter Store | `/configuration-api/{stage}/bucket-name`; `/housing-tl/{stage}/aspnetcore-environment`. |
+| Database | **None.** There is no DynamoDB or SQL database. The `DynamoDb` settings in `appsettings*.json`, `DynamoDb_LocalMode` in the test Dockerfile, `ConfigurationApi.Tests/ConnectionString.cs` and `database/` (`schema.sql` with an `example_table`, a `postgres:12` Dockerfile, `database.env`) are stale template leftovers and are not used by the application. |
 
-If your ***script execution policy*** prevents you from running the script, you can temporarily ***bypass*** that with:
-```
-powershell -noprofile -ExecutionPolicy Bypass -file .\Renamer.ps1 -apiName My_Api
-```
+## Setup
 
-Or you can change your execution policy, prior to running the script, permanently with _(this disables security so, be cautious)_:
-```
-Set-ExecutionPolicy Unrestricted
-```
+### Prerequisites
 
-After the renaming is done, the ***script will ask you if you want to delete it as well***, as it's useless now - It's your choice.
+1. [Docker][docker-download] with the **`docker compose`** v2 plugin.
+2. A **`LBHPACKAGESTOKEN`** with `read:packages` access to the `LBHackney-IT` GitHub Packages feed — the
+   `Hackney.*` packages are not published to nuget.org:
+   ```sh
+   export LBHPACKAGESTOKEN=<token>
+   ```
+3. Optionally copy [`.env.sample`](.env.sample) to `.env` and set `LBHPACKAGESTOKEN` there instead of
+   exporting it — `docker compose` reads `.env` for the values referenced in `docker-compose.yml`. The file
+   also lists every environment variable the API reads at runtime; those are **not** loaded from `.env`, so
+   export them (or add them to the compose service) if you need to override the defaults.
 
-#### On OSX
+### Build and run
 
-Use Docker to run this script on Macs:
-```
-docker run -it -v `pwd`:/app mcr.microsoft.com/powershell
-```
-
-### Development
-
-To serve the application, run it using your IDE of choice, we use Visual Studio CE and JetBrains Rider on Mac.
-
-**Note**
-When running locally the appropriate database conneciton details are still needed.
-##### Postgres
-For Postgres an approprate `CONNECTION_STRING` environment variable is needed,
-and if you want to use a local Postgres instance then that will of course need to be installed and running.
-##### DynamoDb
-To use a local instance of DynamoDb, this will need to be installed. This is most easily done using [Docker](https://www.docker.com/products/docker-desktop).
-Run the following command, specifying the local path where you want the container's shared volume to be stored.
-```
-docker run --name dynamodb-local -p 8000:8000 -v <PUT YOUR LOCAL PATH HERE>:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data
-```
-
-If you would like to see what is in your local DynamoDb instance using a simple gui, then [this admin tool](https://github.com/aaronshaf/dynamodb-admin) can do that.
-
-The application can also be served locally using docker:
-1.  Add you security credentials to AWS CLI.
 ```sh
-$ aws configure
-```
-2. Log into AWS ECR.
-```sh
-$ aws ecr get-login --no-include-email
-```
-3. Build and serve the application. It will be available in the port 3000.
-```sh
-$ make build && make serve
+git clone git@github.com:LBHackney-IT/configuration-api.git
+cd configuration-api
+make setup     # docker compose build
+make build     # build the API image
+make serve     # start the API (port 3000) and LocalStack
+make shell     # bash inside the API container
 ```
 
-### Release process
-
-We use a pull request workflow, where changes are made on a branch and approved by one or more other maintainers before the developer can merge into `master` branch.
-
-![Circle CI Workflow Example](docs/circle_ci_workflow.png)
-
-Then we have an automated six step deployment process, which runs in CircleCI.
-
-1. Automated tests (nUnit) are run to ensure the release is of good quality.
-2. The application is deployed to development automatically, where we check our latest changes work well.
-3. We manually confirm a staging deployment in the CircleCI workflow once we're happy with our changes in development.
-4. The application is deployed to staging.
-5. We manually confirm a production deployment in the CircleCI workflow once we're happy with our changes in staging.
-6. The application is deployed to production.
-
-Our staging and production environments are hosted by AWS. We would deploy to production per each feature/config merged into  `master`  branch.
-
-### Creating A PR
-
-To help with making changes to code easier to understand when being reviewed, we've added a PR template.
-When a new PR is created on a repo that uses this API template, the PR template will automatically fill in the `Open a pull request` description textbox.
-The PR author can edit and change the PR description using the template as a guide.
-
-## Static Code Analysis
-
-### Using [FxCop Analysers](https://www.nuget.org/packages/Microsoft.CodeAnalysis.FxCopAnalyzers)
-
-FxCop runs code analysis when the Solution is built.
-
-Both the API and Test projects have been set up to **treat all warnings from the code analysis as errors** and therefore, fail the build.
-
-However, we can select which errors to suppress by setting the severity of the responsible rule to none, e.g `dotnet_analyzer_diagnostic.<Category-or-RuleId>.severity = none`, within the `.editorconfig` file.
-Documentation on how to do this can be found [here](https://docs.microsoft.com/en-us/visualstudio/code-quality/use-roslyn-analyzers?view=vs-2019).
+The API image build context is the `ConfigurationApi/` directory; the test image builds from the repository
+root.
 
 ## Testing
 
-### Run the tests
-
 ```sh
-$ make test
+make test
 ```
 
-To run database tests locally (e.g. via Visual Studio) and you are using Postgres the `CONNECTION_STRING` environment variable will need to be populated with:
+`make test` starts the LocalStack S3 service, builds the test image
+(`ConfigurationApi.Tests/Dockerfile`) and runs the suite inside it against LocalStack.
 
-`Host=localhost;Database=testdb;Username=postgres;Password=mypassword"`
+The suite contains both **NUnit** and **xUnit** tests — both frameworks are genuinely in use, so the project
+references both `nunit`/`NUnit3TestAdapter` and `xunit`/`xunit.runner.visualstudio`, and both sets of tests
+are discovered by `dotnet test`.
 
-Note: The Host name needs to be the name of the stub database docker-compose service, in order to run tests via Docker.
+Coverage is collected with `coverlet.collector` (`--collect "XPlat Code Coverage;Format=opencover"`).
 
-If changes to the database schema are made then the docker image for the database will have to be removed and recreated. The restart-db make command will do this for you.
+Note: the E2E test that exercises the configuration endpoint end-to-end
+(`GetConfigurationByName.GivenAConfigurationTypeWhenQueryingControllerReturnsJsonFile`) is currently marked
+`[Fact(Skip = ...)]` because of a pre-existing test-host dependency-file issue. This is unrelated to the
+application itself.
 
-### Agreed Testing Approach
-- Use nUnit, FluentAssertions and Moq
-- Always follow a TDD approach
-- Tests should be independent of each other
-- Gateway tests should interact with a real test instance of the database
-- Test coverage should never go down
-- All use cases should be covered by E2E tests
-- Optimise when test run speed starts to hinder development
-- Unit tests and E2E tests should run in CI
-- Test database schemas should match up with production database schema
-- Have integration tests which test from the PostgreSQL database to API Gateway
+### Agreed testing approach
 
-## Data Migrations
-### A good data migration
-- Record failure logs
-- Automated
-- Reliable
-- As close to real time as possible
-- Observable monitoring in place
-- Should not affect any existing databases
+- xUnit and NUnit, with FluentAssertions, Moq, AutoFixture and Bogus.
+- Tests should be independent of each other.
+- E2E tests run against a real (containerised) LocalStack S3 instance.
+- Unit and E2E tests run in CI.
+- Test coverage should never go down.
+
+## Deployment
+
+CircleCI (`.circleci/config.yml`) gates deployment on a code-formatting check (`dotnet-format --check`), the
+Docker test suite and a `sonarcloud/scan` step, then deploys infrastructure with **Terraform** and the Lambda
+with the **Serverless Framework**. Changes are reviewed and approved on a branch before merging.
+
+**Stages and triggers:**
+
+- **Feature branches** (anything except `master` and `release`) — formatting, tests and Terraform **plan
+  previews** against development, staging and production. Nothing is applied or deployed.
+- **`master`** — formatting, tests, Terraform apply to development, then deployment to **development**.
+- **`release`** — formatting, tests, Terraform apply to staging and deployment to **staging**. Production
+  follows only after the `permit-production-terraform-release` and `permit-production-release` manual approvals.
+- **`release`** — the separate `deploy-terraform-pre-production` and `deploy-code-pre-production` workflows
+  deploy **pre-production**, each behind its own manual approval.
+
+**Packaging and runtime:**
+
+- `build.sh` installs `Amazon.Lambda.Tools` and runs
+  `dotnet lambda package --configuration release --framework net10.0 --output-package ./bin/release/net10.0/configuration-api.zip`.
+  (`build.cmd` is the Windows equivalent for local use.)
+- The deploy job runs `sls deploy --stage <stage> --conceal`.
+- `serverless.yml` declares `runtime: dotnet10`, consumes that artifact, and exposes `ANY /{proxy+}` plus
+  `GET /swagger/{proxy+}` behind the request authorizer, with the `Platform_APIs_Web_ACL` WAF attached.
 
 ## Contacts
 
-### Active Maintainers
-
-- **Selwyn Preston**, Lead Developer at London Borough of Hackney (selwyn.preston@hackney.gov.uk)
-- **Mirela Georgieva**, Lead Developer at London Borough of Hackney (mirela.georgieva@hackney.gov.uk)
-- **Matt Keyworth**, Lead Developer at London Borough of Hackney (matthew.keyworth@hackney.gov.uk)
-
-### Other Contacts
-
-- **Rashmi Shetty**, Product Owner at London Borough of Hackney (rashmi.shetty@hackney.gov.uk)
+**Housing product team** — [mmh-project-team@hackney.gov.uk](mailto:mmh-project-team@hackney.gov.uk)
 
 [docker-download]: https://www.docker.com/products/docker-desktop
-[universal-housing-simulator]: https://github.com/LBHackney-IT/lbh-universal-housing-simulator
-[made-tech]: https://madetech.com/
 [AWS-CLI]: https://aws.amazon.com/cli/
