@@ -1,5 +1,5 @@
-# Use the official .NET 8 SDK image as the base image
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Use the official .NET 10 SDK image as the base image
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 # Disable Microsoft telemetry
 ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
